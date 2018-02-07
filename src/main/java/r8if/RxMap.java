@@ -23,18 +23,22 @@ public final class RxMap<K, V> {
       return null;
    }
 
-   Completable put(K key, V value) {
+   public Completable put(K key, V value) {
       // TODO: Add flat to avoid return
       return Futures
          .toCompletable(cache.putAsync(key, value))
          .observeOn(Schedulers.io());
    }
 
-   Maybe<V> get(K key) {
+   public Maybe<V> get(K key) {
       return Futures
          .toMaybe(cache.getAsync(key))
          .doOnSuccess(v -> log.debugf("get(%s)=%s", key, v))
          .observeOn(Schedulers.io());
+   }
+
+   public RxClient client() {
+      return client();
    }
 
    // get will be Maybe

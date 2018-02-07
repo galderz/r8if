@@ -11,8 +11,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class APIs {
 
    /**
-    * Reactive remote put/get with:
-    * - create/destroy lifecycle
+    * Reactive remote put/get with create/destroy lifecycle and:
     * - without caching variables
     * - without deep nesting
     * - client/map retrieval as separate steps
@@ -36,8 +35,7 @@ public class APIs {
    }
 
    /**
-    * Reactive remote put/get with:
-    * - create/destroy lifecycle
+    * Reactive remote put/get with create/destroy lifecycle and:
     * - without caching variables
     * - without deep nesting
     * - map retrieved in a single step
@@ -49,6 +47,32 @@ public class APIs {
          .flatMap(named -> named.put("pokemon", "mudkip").andThen(Single.just(named)))
          .flatMapMaybe(named -> named.get("pokemon"))
          .doAfterTerminate(() -> RxClients.stop("client"));
+
+      TestObserver<String> observer = new TestObserver<>();
+      value.subscribe(observer);
+
+      observer.awaitTerminalEvent(5, SECONDS);
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValue("mudkip");
+   }
+
+   /**
+    * Reactive remote put/get with create/destroy lifecycle and:
+    * - without caching variables
+    * - without deep nesting
+    * - map retrieved in a single step
+    */
+   @Test
+   public void testPutGetV3() {
+      Maybe<String> value = RxClient
+         .from(new ConfigurationBuilder())
+         .flatMap(client -> client.<String, String>rxMap("default"))
+         .flatMapMaybe(map ->
+            map.put("pokemon", "mudkip")
+               .andThen(map.get("pokemon"))
+               .doAfterTerminate(() -> map.client().stop())
+         );
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);
