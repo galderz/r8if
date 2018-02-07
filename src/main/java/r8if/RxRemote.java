@@ -1,4 +1,4 @@
-package org.infinispan.reactivex;
+package r8if;
 
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;

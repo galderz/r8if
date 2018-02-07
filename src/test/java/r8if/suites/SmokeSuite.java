@@ -1,17 +1,17 @@
-package org.infinispan.reactivex.suites;
+package r8if.suites;
 
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
-import org.infinispan.reactivex.SingleNode;
 import org.infinispan.server.hotrod.HotRodServer;
 import org.infinispan.server.hotrod.configuration.HotRodServerConfigurationBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import r8if.SingleNode;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(SingleNode.class)

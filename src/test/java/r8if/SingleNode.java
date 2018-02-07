@@ -1,4 +1,4 @@
-package org.infinispan.reactivex;
+package r8if;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
