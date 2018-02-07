@@ -8,7 +8,6 @@ import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.junit.Test;
 
-import static io.reactivex.Single.just;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SingleNode {
@@ -20,7 +19,7 @@ public class SingleNode {
       log.info("First test");
 
       TestObserver<String> observer = new TestObserver<>();
-      Maybe<String> maybe = RxRemote
+      Maybe<String> maybe = RxClient
          .from(new ConfigurationBuilder())
          .flatMap(remote -> remote.<String, String>named("default"))
          .flatMap(named -> named.put("pokemon", "mudkip").andThen(Single.just(named)))

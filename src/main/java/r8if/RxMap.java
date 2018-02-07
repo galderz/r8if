@@ -6,15 +6,15 @@ import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import org.infinispan.client.hotrod.RemoteCache;
 
-public final class RxNamed<K, V> {
+public final class RxMap<K, V> {
 
    private final RemoteCache<K, V> cache;
 
-   public RxNamed(RemoteCache<K, V> cache) {
+   public RxMap(RemoteCache<K, V> cache) {
       this.cache = cache;
    }
 
-   RxNamed<K, V> withScheduler(Scheduler s) {
+   RxMap<K, V> withScheduler(Scheduler s) {
       // TODO
       return null;
    }

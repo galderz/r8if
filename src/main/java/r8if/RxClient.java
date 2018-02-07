@@ -9,39 +9,39 @@ import org.infinispan.client.hotrod.logging.LogFactory;
 
 import java.util.concurrent.Callable;
 
-public final class RxRemote {
+public final class RxClient {
 
-   private static final Log log = LogFactory.getLog(RxRemote.class);
+   private static final Log log = LogFactory.getLog(RxClient.class);
 
    private final RemoteCacheManager remote;
 
-   private RxRemote(RemoteCacheManager remote) {
+   private RxClient(RemoteCacheManager remote) {
       this.remote = remote;
    }
 
-   public <K, V> Single<RxNamed<K, V>> named(String name) {
+   public <K, V> Single<RxMap<K, V>> named(String name) {
       return Single
          .fromCallable(this.<K, V>cache(name))
          .subscribeOn(Schedulers.io());
    }
 
-   public static Single<RxRemote> from(ConfigurationBuilder cfg) {
+   public static Single<RxClient> from(ConfigurationBuilder cfg) {
       return Single
          .fromCallable(remote(cfg))
          .subscribeOn(Schedulers.io());
    }
 
-   private <K, V> Callable<RxNamed<K, V>> cache(String name) {
+   private <K, V> Callable<RxMap<K, V>> cache(String name) {
       return () -> {
          log.info("Get cache");
-         return new RxNamed<>(remote.getCache(name));
+         return new RxMap<>(remote.getCache(name));
       };
    }
 
-   private static Callable<RxRemote> remote(ConfigurationBuilder cfg) {
+   private static Callable<RxClient> remote(ConfigurationBuilder cfg) {
       return () -> {
          log.info("Create cache manager");
-         return new RxRemote(new RemoteCacheManager(cfg.build()));
+         return new RxClient(new RemoteCacheManager(cfg.build()));
       };
    }
 
