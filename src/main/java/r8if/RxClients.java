@@ -18,6 +18,13 @@ public final class RxClients {
          .subscribeOn(Schedulers.io());
    }
 
+   public static <K, V> Single<RxMap<K, V>> rxMap(String clientName, ConfigurationBuilder cfg, String cacheName) {
+      return RxClient.from(cfg)
+         .doOnSuccess(client -> CLIENTS.put(clientName, client))
+         .flatMap(client -> client.<K, V>rxMap(cacheName))
+         .subscribeOn(Schedulers.io());
+   }
+
    public static Completable stop(String clientName) {
       RxClient client = CLIENTS.get(clientName);
 
