@@ -12,6 +12,7 @@
    <Loggers>
        <Logger name="org.infinispan" level="info" />
        <Logger name="org.jgroups" level="error"/>
+       <Logger name="r8if" level="trace"/>
        <Root level="info">
           <AppenderRef ref="STDOUT"/>
        </Root>

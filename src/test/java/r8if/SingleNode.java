@@ -14,18 +14,24 @@ public class SingleNode {
 
    private static final Log log = LogFactory.getLog(SingleNode.class);
 
+   /**
+    * Reactive remote put/get with:
+    * - create/destroy lifecycle
+    * - without caching variables
+    * - without deep nesting
+    * - client/map retrieval as separate steps
+    */
    @Test
-   public void testPutGet() {
-      log.info("First test");
+   public void testPutGetV1() {
+      Maybe<String> value = RxClients
+         .rxClient("client", new ConfigurationBuilder())
+         .flatMap(remote -> remote.<String, String>rxMap("default"))
+         .flatMap(named -> named.put("pokemon", "mudkip").andThen(Single.just(named)))
+         .flatMapMaybe(named -> named.get("pokemon"))
+         .doAfterTerminate(() -> RxClients.stop("client"));
 
       TestObserver<String> observer = new TestObserver<>();
-      Maybe<String> maybe = RxClient
-         .from(new ConfigurationBuilder())
-         .flatMap(remote -> remote.<String, String>named("default"))
-         .flatMap(named -> named.put("pokemon", "mudkip").andThen(Single.just(named)))
-         .flatMapMaybe(named -> named.get("pokemon"));
-
-      maybe.subscribe(observer);
+      value.subscribe(observer);
 
       observer.awaitTerminalEvent(5, SECONDS);
       observer.assertComplete();

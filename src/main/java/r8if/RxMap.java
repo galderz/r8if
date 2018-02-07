@@ -5,8 +5,12 @@ import io.reactivex.Maybe;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import org.infinispan.client.hotrod.RemoteCache;
+import org.infinispan.client.hotrod.logging.Log;
+import org.infinispan.client.hotrod.logging.LogFactory;
 
 public final class RxMap<K, V> {
+
+   private static final Log log = LogFactory.getLog(RxMap.class);
 
    private final RemoteCache<K, V> cache;
 
@@ -20,6 +24,7 @@ public final class RxMap<K, V> {
    }
 
    Completable put(K key, V value) {
+      // TODO: Add flat to avoid return
       return Futures
          .toCompletable(cache.putAsync(key, value))
          .observeOn(Schedulers.io());
@@ -28,6 +33,7 @@ public final class RxMap<K, V> {
    Maybe<V> get(K key) {
       return Futures
          .toMaybe(cache.getAsync(key))
+         .doOnSuccess(v -> log.debugf("get(%s)=%s", key, v))
          .observeOn(Schedulers.io());
    }
 
