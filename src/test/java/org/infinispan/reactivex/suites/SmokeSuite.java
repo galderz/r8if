@@ -1,10 +1,11 @@
-package org.infinispan.reactivex;
+package org.infinispan.reactivex.suites;
 
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.reactivex.SingleNode;
 import org.infinispan.server.hotrod.HotRodServer;
 import org.infinispan.server.hotrod.configuration.HotRodServerConfigurationBuilder;
 import org.junit.AfterClass;
@@ -13,10 +14,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(SingleTest.class)
-public class Servers {
+@Suite.SuiteClasses(SingleNode.class)
+public class SmokeSuite {
 
-   static Log log = LogFactory.getLog(Servers.class);
+   static Log log = LogFactory.getLog(SmokeSuite.class);
    private static HotRodServer server;
 
    @BeforeClass

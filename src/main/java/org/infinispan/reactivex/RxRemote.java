@@ -15,14 +15,27 @@ public final class RxRemote {
 
    private final RemoteCacheManager remote;
 
-   public RxRemote(RemoteCacheManager remote) {
+   private RxRemote(RemoteCacheManager remote) {
       this.remote = remote;
    }
 
-   static Single<RxRemote> from(ConfigurationBuilder cfg) {
+   public <K, V> Single<RxNamed<K, V>> named(String name) {
+      return Single
+         .fromCallable(this.<K, V>cache(name))
+         .subscribeOn(Schedulers.io());
+   }
+
+   public static Single<RxRemote> from(ConfigurationBuilder cfg) {
       return Single
          .fromCallable(remote(cfg))
          .subscribeOn(Schedulers.io());
+   }
+
+   private <K, V> Callable<RxNamed<K, V>> cache(String name) {
+      return () -> {
+         log.info("Get cache");
+         return new RxNamed<>(remote.getCache(name));
+      };
    }
 
    private static Callable<RxRemote> remote(ConfigurationBuilder cfg) {
