@@ -8,6 +8,7 @@ import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+// TODO Change name
 public final class RxClients {
 
    private static final ConcurrentMap<String, RxClient> CLIENTS = new ConcurrentHashMap<>();

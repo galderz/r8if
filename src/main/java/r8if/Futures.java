@@ -7,7 +7,7 @@ import io.reactivex.subjects.MaybeSubject;
 
 import java.util.concurrent.CompletionStage;
 
-class Futures {
+final class Futures {
 
    private Futures() {
    }
@@ -31,9 +31,9 @@ class Futures {
       MaybeSubject<T> ms = MaybeSubject.create();
 
       future.whenComplete(
-         (v, e) -> {
-            if (e != null)
-               ms.onError(e);
+         (v, t) -> {
+            if (t != null)
+               ms.onError(t);
             else if (v != null)
                ms.onSuccess(v);
             else

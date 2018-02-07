@@ -17,8 +17,10 @@ import r8if.SingleNode;
 @Suite.SuiteClasses(SingleNode.class)
 public class SmokeSuite {
 
-   static Log log = LogFactory.getLog(SmokeSuite.class);
+   private static Log log = LogFactory.getLog(SmokeSuite.class);
    private static HotRodServer server;
+
+   // TODO: Clear all remote caches in between tests
 
    @BeforeClass
    public static void startServers() {
