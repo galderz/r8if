@@ -30,8 +30,8 @@ public class APIs {
       value.subscribe(observer);
 
       observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertComplete();
       observer.assertNoErrors();
+      observer.assertComplete();
       observer.assertValue("mudkip");
    }
 
@@ -54,8 +54,8 @@ public class APIs {
       value.subscribe(observer);
 
       observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertComplete();
       observer.assertNoErrors();
+      observer.assertComplete();
       observer.assertValue("mudkip");
    }
 

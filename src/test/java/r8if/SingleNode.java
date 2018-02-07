@@ -24,8 +24,8 @@ public class SingleNode {
       value.subscribe(observer);
 
       observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertComplete();
       observer.assertNoErrors();
+      observer.assertComplete();
       observer.assertValueCount(0);
    }
 
