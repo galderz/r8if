@@ -12,21 +12,21 @@ public final class RxClient {
 
    private static final Log log = LogFactory.getLog(RxClient.class);
 
-   private final RemoteCacheManager client;
+   private final RemoteCacheManager cacheManager;
 
    private RxClient(RemoteCacheManager client) {
-      this.client = client;
+      this.cacheManager = client;
    }
 
    public <K, V> Single<RxMap<K, V>> rxMap(String name) {
       return Single
          .fromCallable(
-            () -> new RxMap<>(client.<K, V>getCache(name))
+            () -> new RxMap<>(cacheManager.<K, V>getCache(name), this)
          ).subscribeOn(Schedulers.io());
    }
 
    public Completable stop() {
-      return Completable.fromFuture(client.stopAsync());
+      return Completable.fromFuture(cacheManager.stopAsync());
    }
 
    public static Single<RxClient> from(ConfigurationBuilder cfg) {

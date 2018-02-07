@@ -11,10 +11,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import r8if.APIs;
 import r8if.SingleNode;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(SingleNode.class)
+@Suite.SuiteClasses({SingleNode.class, APIs.class})
 public class SmokeSuite {
 
    private static Log log = LogFactory.getLog(SmokeSuite.class);

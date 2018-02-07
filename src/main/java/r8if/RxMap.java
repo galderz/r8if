@@ -3,8 +3,10 @@ package r8if;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.infinispan.client.hotrod.RemoteCache;
+import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 
@@ -13,9 +15,11 @@ public final class RxMap<K, V> {
    private static final Log log = LogFactory.getLog(RxMap.class);
 
    private final RemoteCache<K, V> cache;
+   private final RxClient client;
 
-   public RxMap(RemoteCache<K, V> cache) {
+   public RxMap(RemoteCache<K, V> cache, RxClient client) {
       this.cache = cache;
+      this.client = client;
    }
 
    RxMap<K, V> withScheduler(Scheduler s) {
@@ -38,7 +42,13 @@ public final class RxMap<K, V> {
    }
 
    public RxClient client() {
-      return client();
+      return client;
+   }
+
+   public static <K, V> Single<RxMap<K, V>> from(String cacheName, ConfigurationBuilder cfg) {
+      return RxClient
+         .from(cfg)
+         .flatMap(client -> client.rxMap(cacheName));
    }
 
    // get will be Maybe
