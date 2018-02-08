@@ -7,18 +7,15 @@ import io.reactivex.MaybeSource;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.MaybeSubject;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-import static r8if.Futures.biFutureToMaybe;
-import static r8if.Futures.futureToMaybe;
+import static r8if.Futures.toMaybe;
 
 public final class RxMap<K, V> {
 
@@ -52,7 +49,7 @@ public final class RxMap<K, V> {
 //   }
 
    public Maybe<V> get(K key) {
-      return biFutureToMaybe(key, cache,
+      return Futures.toMaybe(key, cache,
          (k, rc) -> rc.getAsync(key)
       );
 

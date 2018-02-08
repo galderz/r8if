@@ -7,7 +7,6 @@ import io.reactivex.Single;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subjects.SingleSubject;
-import org.infinispan.client.hotrod.RemoteCache;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
@@ -35,16 +34,16 @@ final class Futures {
       return cs;
    }
 
-   static <A, B, V> Maybe<V> biFutureToMaybe(A a, B b, BiFunction<A, B, CompletableFuture<V>> f) {
-      return new Maybe<V>() {
+   static <A, B, T> Maybe<T> toMaybe(A a, B b, BiFunction<A, B, CompletionStage<T>> f) {
+      return new Maybe<T>() {
          @Override
-         protected void subscribeActual(MaybeObserver<? super V> observer) {
+         protected void subscribeActual(MaybeObserver<? super T> observer) {
             f.apply(a, b).whenComplete(
-               (v, t) -> {
+               (x, t) -> {
                   if (t != null)
                      observer.onError(t);
-                  else if (v != null)
-                     observer.onSuccess(v);
+                  else if (x != null)
+                     observer.onSuccess(x);
                   else
                      observer.onComplete();
                }
