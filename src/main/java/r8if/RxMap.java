@@ -17,6 +17,9 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
+import static r8if.Futures.biFutureToMaybe;
+import static r8if.Futures.futureToMaybe;
+
 public final class RxMap<K, V> {
 
    private static final Log log = LogFactory.getLog(RxMap.class);
@@ -49,14 +52,18 @@ public final class RxMap<K, V> {
 //   }
 
    public Maybe<V> get(K key) {
-      return toMaybe(key, (k, rc) -> rc.getAsync(key));
+      return biFutureToMaybe(key, cache,
+         (k, rc) -> rc.getAsync(key)
+      );
 
-//      return Futures
-//         .toMaybe(() -> cache.getAsync(key))
-//         .doOnSuccess(v -> log.debugf("get(%s)=%s", key, v))
-//         .doOnComplete(() -> log.debugf("get(%s) not found", key))
-//         .observeOn(Schedulers.io());
+//      return getAsync
+//         .andThen(cf -> Futures.<V>futureToMaybe().apply(cf))
+//         .apply(key, cache);
    }
+
+//   private BiFunction<K, RemoteCache<K, V>, CompletableFuture<V>> keyCacheToFuture() {
+//      return (k, rc) ->
+//   }
 
    private Maybe<V> toMaybe(K key, BiFunction<K, RemoteCache<K, V>, CompletableFuture<V>> f) {
       return new Maybe<V>() {
@@ -74,22 +81,6 @@ public final class RxMap<K, V> {
             );
          }
       };
-
-//      MaybeSubject<V> ms = MaybeSubject.create();
-
-
-//      return (MaybeSource<V>) observer -> {
-//         f.apply(key, cache).whenComplete(
-//            (v, t) -> {
-//               if (t != null)
-//                  observer.onError(t);
-//               else if (v != null)
-//                  observer.onSuccess(v);
-//               else
-//                  observer.onComplete();
-//            }
-//         );
-//      };
    }
 
    private MaybeSource<V> toMaybeSource(K key, BiFunction<K, RemoteCache<K, V>, CompletableFuture<V>> f) {

@@ -30,7 +30,7 @@ public class SingleNode {
 //   }
 
    @Test
-   public void testPutThenGetg() {
+   public void testPutThenGet() {
       Maybe<String> value = RxMap
          .<String, String>from("default", new ConfigurationBuilder())
          .flatMapMaybe(map ->
