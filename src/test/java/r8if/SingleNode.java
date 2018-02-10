@@ -132,4 +132,24 @@ public class SingleNode {
       observer.assertValue("beedrill");
    }
 
+   @Test
+   public void testClear() {
+      Maybe<String> value = RxMap
+         .<String, String>from("default", new ConfigurationBuilder())
+         .flatMapMaybe(map ->
+            map.put("46", "paras")
+               .andThen(map.clear())
+               .andThen(map.get("46"))
+               .doAfterTerminate(() -> map.client().stop())
+         );
+
+      TestObserver<String> observer = new TestObserver<>();
+      value.subscribe(observer);
+
+      observer.awaitTerminalEvent(5, SECONDS);
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValueCount(0);
+   }
+
 }

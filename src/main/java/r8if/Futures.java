@@ -9,6 +9,8 @@ import io.reactivex.SingleObserver;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subjects.SingleSubject;
+import org.infinispan.client.hotrod.logging.Log;
+import org.infinispan.client.hotrod.logging.LogFactory;
 import r8if.Fn.TriFunction;
 
 import java.util.NoSuchElementException;
@@ -18,6 +20,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 final class Futures {
+
+   private static final Log log = LogFactory.getLog(Futures.class);
 
    private Futures() {
    }
@@ -32,6 +36,26 @@ final class Futures {
                      observer.onError(t);
                   else
                      observer.onComplete();
+               }
+            );
+         }
+      };
+   }
+
+   static <A, T> Completable toCompletable(A a, String l, Function<A, CompletionStage<T>> f) {
+      return new Completable() {
+         @Override
+         protected void subscribeActual(CompletableObserver observer) {
+            log.debugf(l);
+            f.apply(a).whenComplete(
+               (v, t) -> {
+                  if (t != null) {
+                     log.debugf(t, "%s failed", l);
+                     observer.onError(t);
+                  } else {
+                     log.debugf("%s completed", l);
+                     observer.onComplete();
+                  }
                }
             );
          }

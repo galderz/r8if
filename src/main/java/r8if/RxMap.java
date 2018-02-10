@@ -10,6 +10,7 @@ import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
+import org.infinispan.commons.api.AsyncCache;
 
 import java.util.Objects;
 
@@ -63,6 +64,12 @@ public final class RxMap<K, V> {
                log.debugf("get(%s)", key);
                return rc.getAsync(key);
             })
+         .observeOn(Schedulers.io());
+   }
+
+   public Completable clear() {
+      return Futures
+         .toCompletable(cache, "clear()", AsyncCache::clearAsync)
          .observeOn(Schedulers.io());
    }
 
