@@ -76,4 +76,43 @@ public class SingleNode {
       observer.assertValue("butterfree");
    }
 
+   @Test
+   public void testPutIfAbsent() {
+      // TODO Can it work when values are sent back? (see client config)
+      Single<Boolean> isAbsent = RxMap
+         .<String, String>from("default", new ConfigurationBuilder())
+         .flatMap(map ->
+            map.putIfAbsent("13", "weedle")
+               .doAfterTerminate(() -> map.client().stop())
+         );
+
+      TestObserver<Boolean> observer = new TestObserver<>();
+      isAbsent.subscribe(observer);
+
+      observer.awaitTerminalEvent(5, SECONDS);
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValue(true);
+   }
+
+   @Test
+   public void testPutIfAbsentNot() {
+      // TODO Can it work when values are sent back? (see client config)
+      Single<Boolean> isAbsent = RxMap
+         .<String, String>from("default", new ConfigurationBuilder())
+         .flatMap(map ->
+            map.put("14", "snorlax")
+               .andThen(map.putIfAbsent("14", "kakuna"))
+               .doAfterTerminate(() -> map.client().stop())
+         );
+
+      TestObserver<Boolean> observer = new TestObserver<>();
+      isAbsent.subscribe(observer);
+
+      observer.awaitTerminalEvent(5, SECONDS);
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValue(false);
+   }
+
 }

@@ -4,9 +4,11 @@ import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.subjects.CompletableSubject;
 import io.reactivex.subjects.MaybeSubject;
 import io.reactivex.subjects.SingleSubject;
+import r8if.Fn.TriFunction;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
@@ -52,6 +54,22 @@ final class Futures {
       };
    }
 
+   static <A, B, C, T> Single<T> toSingle(A a, B b, C c, TriFunction<A, B, C, CompletionStage<T>> f) {
+      return new Single<T>() {
+         @Override
+         protected void subscribeActual(SingleObserver<? super T> observer) {
+            f.apply(a, b, c).whenComplete(
+               (x, t) -> {
+                  if (t != null)
+                     observer.onError(t);
+                  else
+                     observer.onSuccess(x);
+               }
+            );
+         }
+      };
+   }
+
    static <V> Function<CompletableFuture<V>, Maybe<V>> futureToMaybe() {
       return cf ->
          new Maybe<V>() {
@@ -88,19 +106,19 @@ final class Futures {
       return ms;
    }
 
-   public static <T> Single<T> toSingle(CompletionStage<T> future) {
-      SingleSubject<T> cs = SingleSubject.create();
-
-      future.whenComplete((v, e) -> {
-         if (e != null)
-            cs.onError(e);
-         else if (v != null)
-            cs.onSuccess(v);
-         else
-            cs.onError(new NoSuchElementException());
-      });
-
-      return cs;
-   }
+//   public static <T> Single<T> toSingle(CompletionStage<T> future) {
+//      SingleSubject<T> cs = SingleSubject.create();
+//
+//      future.whenComplete((v, e) -> {
+//         if (e != null)
+//            cs.onError(e);
+//         else if (v != null)
+//            cs.onSuccess(v);
+//         else
+//            cs.onError(new NoSuchElementException());
+//      });
+//
+//      return cs;
+//   }
 
 }
