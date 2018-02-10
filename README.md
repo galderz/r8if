@@ -1,6 +1,6 @@
 - [ ] Deal with return of awaitTerminalEvent
 - [ ] Each test should clear the cache when it finishes (symmetry) and wait for it
-- [ ] Cache client in SingleNode test suite
+- [x] Cache client in SingleNode test suite
 - [ ] Create an API test where we show how to stop a cache and wait for it returning last operation result
 - [x] Verify calls are lazy and follow the sequence
 - [ ] Allow individual tests to be run starting only server(s) needed for that test

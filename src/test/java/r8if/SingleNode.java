@@ -7,6 +7,8 @@ import io.reactivex.observers.TestObserver;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -15,12 +17,35 @@ public class SingleNode {
 
    private static final Log log = LogFactory.getLog(SingleNode.class);
 
+   static RxMap<String, String> map;
+
+   @BeforeClass
+   public static void before() {
+      Single<RxMap<String, String>> value =
+         RxMap.from("default", new ConfigurationBuilder());
+
+      TestObserver<RxMap<String, String>> observer = new TestObserver<>();
+      value.subscribe(observer);
+      boolean terminated = observer.awaitTerminalEvent(10, SECONDS);
+      if (!terminated)
+         throw new AssertionError("Unable to create RxMap instance");
+
+      map = observer.values().get(0);
+   }
+
+   @AfterClass
+   public static void after() {
+      Completable stop = map.client().stop();
+      TestObserver<Void> observer = new TestObserver<>();
+      stop.subscribe(observer);
+      boolean terminated = observer.awaitTerminalEvent(5, SECONDS);
+      if (!terminated)
+         log.debugf("Unable to complete stopping client");
+   }
+
    @Test
    public void testGetOnly() {
-      Maybe<String> value = RxClients
-         .<String, String>rxMap("client", new ConfigurationBuilder(), "default")
-         .flatMapMaybe(named -> named.get("10"))
-         .doAfterTerminate(() -> RxClients.stop("client"));
+      Maybe<String> value = map.get("10");
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);
@@ -33,13 +58,9 @@ public class SingleNode {
 
    @Test
    public void testPutThenGet() {
-      Maybe<String> value = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMapMaybe(map ->
-            map.put("11", "metapod")
-               .andThen(map.get("11"))
-               .doAfterTerminate(() -> map.client().stop())
-         );
+      Maybe<String> value =
+         map.put("11", "metapod")
+            .andThen(map.get("11"));
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);
@@ -52,19 +73,15 @@ public class SingleNode {
 
    @Test
    public void testGetThenPut() {
-      Maybe<String> value = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMapMaybe(map ->
-            map.get("12")
-               .isEmpty()
-               .flatMapCompletable(notFound ->
-                  notFound
-                     ? map.put("12", "butterfree")
-                     : Completable.error(new AssertionError("Expected no results out of get()"))
-               )
-               .andThen(map.get("12"))
-               .doAfterTerminate(() -> map.client().stop())
-         );
+      Maybe<String> value =
+         map.get("12")
+         .isEmpty()
+         .flatMapCompletable(notFound ->
+            notFound
+               ? map.put("12", "butterfree")
+               : Completable.error(new AssertionError("Expected no results out of get()"))
+         )
+         .andThen(map.get("12"));
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);
@@ -77,12 +94,8 @@ public class SingleNode {
 
    @Test
    public void testPutIfAbsent() {
-      Single<Boolean> isAbsent = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMap(map ->
-            map.putIfAbsent("13", "weedle")
-               .doAfterTerminate(() -> map.client().stop())
-         );
+      Single<Boolean> isAbsent =
+         map.putIfAbsent("13", "weedle");
 
       TestObserver<Boolean> observer = new TestObserver<>();
       isAbsent.subscribe(observer);
@@ -95,13 +108,9 @@ public class SingleNode {
 
    @Test
    public void testPutIfAbsentNot() {
-      Single<Boolean> isAbsent = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMap(map ->
-            map.put("14", "snorlax")
-               .andThen(map.putIfAbsent("14", "kakuna"))
-               .doAfterTerminate(() -> map.client().stop())
-         );
+      Single<Boolean> isAbsent =
+         map.put("14", "snorlax")
+            .andThen(map.putIfAbsent("14", "kakuna"));
 
       TestObserver<Boolean> observer = new TestObserver<>();
       isAbsent.subscribe(observer);
@@ -114,14 +123,10 @@ public class SingleNode {
 
    @Test
    public void testPutThenPut() {
-      Maybe<String> value = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMapMaybe(map ->
-            map.put("15", "blissey")
-               .andThen(map.put("15", "beedrill"))
-               .andThen(map.get("15"))
-               .doAfterTerminate(() -> map.client().stop())
-         );
+      Maybe<String> value =
+         map.put("15", "blissey")
+            .andThen(map.put("15", "beedrill"))
+            .andThen(map.get("15"));
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);
@@ -134,14 +139,10 @@ public class SingleNode {
 
    @Test
    public void testClear() {
-      Maybe<String> value = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMapMaybe(map ->
-            map.put("46", "paras")
-               .andThen(map.clear())
-               .andThen(map.get("46"))
-               .doAfterTerminate(() -> map.client().stop())
-         );
+      Maybe<String> value =
+         map.put("46", "paras")
+            .andThen(map.clear())
+            .andThen(map.get("46"));
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);

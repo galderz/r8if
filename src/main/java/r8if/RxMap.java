@@ -50,9 +50,9 @@ public final class RxMap<K, V> {
                return rc
                   // TODO: Sucks that previous value is needed when API only returns Boolean (too much work)
                   .withFlags(Flag.FORCE_RETURN_VALUE)
-                  .putIfAbsentAsync(key, value);
+                  .putIfAbsentAsync(key, value)
+                  .thenApply(Objects::isNull);
             })
-         .map(Objects::isNull)
          .doOnSuccess(isAbsent -> log.debugf("putIfAbsent returns: %s", isAbsent))
          .observeOn(Schedulers.io());
    }
@@ -60,16 +60,18 @@ public final class RxMap<K, V> {
    public Maybe<V> get(K key) {
       return Futures
          .toMaybe(key, cache,
-            (k, rc) -> {
-               log.debugf("get(%s)", key);
-               return rc.getAsync(key);
-            })
+            k -> String.format("get(%s)", key),
+            (k, rc) -> rc.getAsync(key)
+         )
          .observeOn(Schedulers.io());
    }
 
    public Completable clear() {
       return Futures
-         .toCompletable(cache, "clear()", AsyncCache::clearAsync)
+         .toCompletable(cache,
+            "clear()",
+            AsyncCache::clearAsync
+         )
          .observeOn(Schedulers.io());
    }
 
