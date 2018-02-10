@@ -1,6 +1,7 @@
 package r8if;
 
 import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.Single;
@@ -21,19 +22,20 @@ final class Futures {
    private Futures() {
    }
 
-   static Completable toCompletable(CompletionStage<?> future) {
-      CompletableSubject cs = CompletableSubject.create();
-
-      future.whenComplete(
-         (v, t) -> {
-            if (t != null)
-               cs.onError(t);
-            else
-               cs.onComplete();
+   static <A, B, C, T> Completable toCompletable(A a, B b, C c, TriFunction<A, B, C, CompletionStage<T>> f) {
+      return new Completable() {
+         @Override
+         protected void subscribeActual(CompletableObserver observer) {
+            f.apply(a, b, c).whenComplete(
+               (v, t) -> {
+                  if (t != null)
+                     observer.onError(t);
+                  else
+                     observer.onComplete();
+               }
+            );
          }
-      );
-
-      return cs;
+      };
    }
 
    static <A, B, T> Maybe<T> toMaybe(A a, B b, BiFunction<A, B, CompletionStage<T>> f) {

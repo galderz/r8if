@@ -10,7 +10,6 @@ import org.infinispan.client.hotrod.logging.LogFactory;
 import org.junit.Test;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.fail;
 
 public class SingleNode {
 
@@ -78,7 +77,6 @@ public class SingleNode {
 
    @Test
    public void testPutIfAbsent() {
-      // TODO Can it work when values are sent back? (see client config)
       Single<Boolean> isAbsent = RxMap
          .<String, String>from("default", new ConfigurationBuilder())
          .flatMap(map ->
@@ -97,7 +95,6 @@ public class SingleNode {
 
    @Test
    public void testPutIfAbsentNot() {
-      // TODO Can it work when values are sent back? (see client config)
       Single<Boolean> isAbsent = RxMap
          .<String, String>from("default", new ConfigurationBuilder())
          .flatMap(map ->
@@ -113,6 +110,26 @@ public class SingleNode {
       observer.assertNoErrors();
       observer.assertComplete();
       observer.assertValue(false);
+   }
+
+   @Test
+   public void testPutThenPut() {
+      Maybe<String> value = RxMap
+         .<String, String>from("default", new ConfigurationBuilder())
+         .flatMapMaybe(map ->
+            map.put("15", "blissey")
+               .andThen(map.put("15", "beedrill"))
+               .andThen(map.get("15"))
+               .doAfterTerminate(() -> map.client().stop())
+         );
+
+      TestObserver<String> observer = new TestObserver<>();
+      value.subscribe(observer);
+
+      observer.awaitTerminalEvent(5, SECONDS);
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValue("beedrill");
    }
 
 }

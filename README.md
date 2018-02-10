@@ -1,9 +1,11 @@
 - [ ] Each test should clear the cache when it finishes (symmetry) and wait for it
 - [ ] Cache client in SingleNode test suite
 - [ ] Create an API test where we show how to stop a cache and wait for it returning last operation result
-- [ ] Verify calls are lazy and follow the sequence
+- [x] Verify calls are lazy and follow the sequence
 - [ ] Allow individual tests to be run starting only server(s) needed for that test
-- [ ] RxMap.putIfAbsent
+- [ ] Enable running suites from command line
+- [ ] Set up travis
+- [x] RxMap.putIfAbsent
 - [x] RxMap.put
 - [x] RxMap.get
 - [x] RxMap factory
