@@ -35,6 +35,7 @@ public final class RxMap<K, V> {
    }
 
    public Completable put(K key, V value) {
+      // TODO putAsync should be lazy (verify when putIfAsbent -> put)
       return Futures
          .toCompletable(cache.putAsync(key, value))
          .doOnComplete(() -> log.debugf("Put complete"))
