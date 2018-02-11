@@ -75,13 +75,11 @@ public class SingleNode {
    public void testGetThenPut() {
       Maybe<String> value =
          map.get("12")
-         .isEmpty()
-         .flatMapCompletable(notFound ->
-            notFound
-               ? map.put("12", "butterfree")
-               : Completable.error(new AssertionError("Expected no results out of get()"))
-         )
-         .andThen(map.get("12"));
+            // put only happens if get returns nothing
+            .switchIfEmpty(map.put("12", "butterfree").toMaybe())
+            // get only happens if put happens
+            // if first get returned something, put and 2nd get would not happen
+            .switchIfEmpty(map.get("12"));
 
       TestObserver<String> observer = new TestObserver<>();
       value.subscribe(observer);
