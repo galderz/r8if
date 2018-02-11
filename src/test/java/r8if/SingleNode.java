@@ -151,4 +151,20 @@ public class SingleNode {
       observer.assertValueCount(0);
    }
 
+   @Test
+   public void testGetThenNoPut() {
+      Maybe<String> value =
+         map.put("47", "parasect")
+            .andThen(map.get("47")) // get then...
+            .switchIfEmpty(map.put("47", "mewtwo").toMaybe()); // no put
+
+      TestObserver<String> observer = new TestObserver<>();
+      value.subscribe(observer);
+
+      observer.awaitTerminalEvent(5, SECONDS);
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValue("parasect");
+   }
+
 }
