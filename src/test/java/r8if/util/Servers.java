@@ -1,4 +1,4 @@
-package r8if.server;
+package r8if.util;
 
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
@@ -13,6 +13,9 @@ import java.util.function.Supplier;
 public final class Servers {
 
    private static final AtomicBoolean isLocalRunning = new AtomicBoolean(false);
+
+   private Servers() {
+   }
 
    public static Closeable local() {
       HotRodServer local = new HotRodServer();

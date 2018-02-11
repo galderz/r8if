@@ -53,16 +53,31 @@ public final class RxMap<K, V> {
                   .putIfAbsentAsync(key, value)
                   .thenApply(Objects::isNull);
             })
-         .doOnSuccess(isAbsent -> log.debugf("putIfAbsent returns: %s", isAbsent))
+         .doOnSuccess(isAbsent -> log.debugf("putIfAbsent returns: %b", isAbsent))
          .observeOn(Schedulers.io());
    }
 
    public Maybe<V> get(K key) {
       return Futures
          .toMaybe(key, cache,
-            k -> String.format("get(%s)", key),
-            (k, rc) -> rc.getAsync(key)
+            k -> String.format("get(%s)", k),
+            (k, rc) -> rc.getAsync(k)
          )
+         .observeOn(Schedulers.io());
+   }
+
+   public Single<Boolean> remove(K key) {
+      return Futures
+         .toSingle(key, cache,
+            (k, rc) -> {
+               log.debugf("remove(%s)", key);
+               return rc
+                  // TODO Sucks that previous value is needed when API only returns Boolean (too much work)
+                  .withFlags(Flag.FORCE_RETURN_VALUE)
+                  .removeAsync(key)
+                  .thenApply(Objects::nonNull);
+            })
+         .doOnSuccess(removed -> log.debugf("remove(%s) returns: %b", key, removed))
          .observeOn(Schedulers.io());
    }
 

@@ -10,12 +10,14 @@ import org.infinispan.client.hotrod.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import r8if.server.Servers;
+import r8if.util.Servers;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static r8if.util.Tests.await;
+import static r8if.util.Tests.cleanup;
 
 public class SingleNode {
 
@@ -56,124 +58,107 @@ public class SingleNode {
    public void testGetOnly() {
       Maybe<String> value = map.get("10");
 
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
-
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValueCount(0);
+      await(value);
    }
 
    @Test
    public void testPutThenGet() {
-      Maybe<String> value =
-         map.put("11", "metapod")
-            .andThen(map.get("11"));
+      final String k = "11";
+      final String v = "metapod";
 
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
+      final Maybe<String> value =
+         map.put(k, v)
+            .andThen(map.get(k));
 
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue("metapod");
+      await(v, value);
+      cleanup(k, map);
    }
 
    @Test
    public void testGetThenPut() {
-      Maybe<String> value =
-         map.get("12")
+      final String k = "12";
+      final String v = "butterfree";
+
+      final Maybe<String> value =
+         map.get(k)
             // put only happens if get returns nothing
-            .switchIfEmpty(map.put("12", "butterfree").toMaybe())
+            .switchIfEmpty(map.put(k, v).toMaybe())
             // get only happens if put happens
             // if first get returned something, put and 2nd get would not happen
-            .switchIfEmpty(map.get("12"));
+            .switchIfEmpty(map.get(k));
 
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
-
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue("butterfree");
+      await(v, value);
+      cleanup(k, map);
    }
 
    @Test
    public void testPutIfAbsent() {
-      Single<Boolean> isAbsent =
-         map.putIfAbsent("13", "weedle");
+      final String k = "13";
 
-      TestObserver<Boolean> observer = new TestObserver<>();
-      isAbsent.subscribe(observer);
+      final Single<Boolean> isAbsent =
+         map.putIfAbsent(k, "weedle");
 
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue(true);
+      await(true, isAbsent);
+      cleanup(k, map);
    }
 
    @Test
    public void testPutIfAbsentNot() {
-      Single<Boolean> isAbsent =
-         map.put("14", "snorlax")
-            .andThen(map.putIfAbsent("14", "kakuna"));
+      final String k = "14";
 
-      TestObserver<Boolean> observer = new TestObserver<>();
-      isAbsent.subscribe(observer);
+      final Single<Boolean> isAbsent =
+         map.put(k, "snorlax")
+            .andThen(map.putIfAbsent(k, "kakuna"));
 
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue(false);
+      await(false, isAbsent);
+      cleanup(k, map);
    }
 
    @Test
    public void testPutThenPut() {
-      Maybe<String> value =
-         map.put("15", "blissey")
-            .andThen(map.put("15", "beedrill"))
-            .andThen(map.get("15"));
+      final String k = "15";
+      final String v = "beedrill";
 
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
+      final Maybe<String> value =
+         map.put(k, "blissey")
+            .andThen(map.put(k, v))
+            .andThen(map.get(k));
 
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue("beedrill");
+      await(v, value);
+      cleanup(k, map);
    }
 
    @Test
    public void testClear() {
-      Maybe<String> value =
-         map.put("46", "paras")
+      final String k = "46";
+
+      final Maybe<String> value =
+         map.put(k, "paras")
             .andThen(map.clear())
-            .andThen(map.get("46"));
+            .andThen(map.get(k));
 
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
-
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValueCount(0);
+      await(value);
    }
 
    @Test
    public void testGetThenNoPut() {
-      Maybe<String> value =
-         map.put("47", "parasect")
-            .andThen(map.get("47")) // get then...
-            .switchIfEmpty(map.put("47", "mewtwo").toMaybe()); // no put
+      final String k = "47";
+      final String v = "parasect";
 
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
+      final Maybe<String> value =
+         map.put(k, v)
+            .andThen(map.get(k)) // get then...
+            .switchIfEmpty(map.put(k, "mewtwo").toMaybe()); // no put
 
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue("parasect");
+      await(v, value);
+      cleanup(k, map);
+   }
+
+   @Test
+   public void testNoRemove() {
+      Single<Boolean> removed = map.remove("48");
+
+      await(false, removed);
    }
 
 }

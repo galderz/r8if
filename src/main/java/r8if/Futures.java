@@ -68,7 +68,21 @@ final class Futures {
       });
    }
 
-   static <A, B, C, T, U> Single<T> toSingle(A a, B b, C c, TriFunction<A, B, C, CompletionStage<T>> f) {
+   static <A, B, T> Single<T> toSingle(A a, B b, BiFunction<A, B, CompletionStage<T>> f) {
+      return Single.create(source -> {
+         f.apply(a, b)
+            .whenComplete(
+               (x, t) -> {
+                  if (t != null)
+                     source.onError(t);
+                  else
+                     source.onSuccess(x);
+               }
+            );
+      });
+   }
+
+   static <A, B, C, T> Single<T> toSingle(A a, B b, C c, TriFunction<A, B, C, CompletionStage<T>> f) {
       return Single.create(source -> {
          f.apply(a, b, c)
             .whenComplete(

@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import r8if.SingleNode;
-import r8if.server.Servers;
+import r8if.util.Servers;
 
 import java.io.Closeable;
 import java.io.IOException;

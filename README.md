@@ -1,5 +1,5 @@
 - [ ] Deal with return of awaitTerminalEvent
-- [ ] Each test should clear the cache when it finishes (symmetry) and wait for it
+- [x] Each test should clear the cache when it finishes (symmetry) and wait for it
 - [x] Cache client in SingleNode test suite
 - [ ] Create an API test where we show how to stop a cache and wait for it returning last operation result
 - [x] Verify calls are lazy and follow the sequence
@@ -11,7 +11,7 @@
 - [ ] RxMap.getAll
 - [ ] RxMap.putAll
 - [ ] RxMap.replace
-- [ ] RxMap.remove
+- [x] RxMap.remove
 - [x] RxMap.clear
 - [x] RxMap.putIfAbsent
 - [x] RxMap.put
