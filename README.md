@@ -3,7 +3,7 @@
 - [x] Cache client in SingleNode test suite
 - [ ] Create an API test where we show how to stop a cache and wait for it returning last operation result
 - [x] Verify calls are lazy and follow the sequence
-- [ ] Allow individual tests to be run starting only server(s) needed for that test
+- [x] Allow individual tests to be run starting only server(s) needed for that test
 - [ ] Enable running suites from command line
 - [ ] Set up travis
 - [ ] Log complete messages after the async operation within lambda (avoid capturing external vars)
@@ -12,7 +12,7 @@
 - [ ] RxMap.putAll
 - [ ] RxMap.replace
 - [ ] RxMap.remove
-- [ ] RxMap.clear
+- [x] RxMap.clear
 - [x] RxMap.putIfAbsent
 - [x] RxMap.put
 - [x] RxMap.get

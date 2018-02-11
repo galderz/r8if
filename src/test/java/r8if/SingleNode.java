@@ -10,6 +10,10 @@ import org.infinispan.client.hotrod.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import r8if.server.Servers;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -18,9 +22,12 @@ public class SingleNode {
    private static final Log log = LogFactory.getLog(SingleNode.class);
 
    static RxMap<String, String> map;
+   private static Closeable local;
 
    @BeforeClass
    public static void before() {
+      local = Servers.startIfNotRunning(Servers::local);
+
       Single<RxMap<String, String>> value =
          RxMap.from("default", new ConfigurationBuilder());
 
@@ -34,13 +41,15 @@ public class SingleNode {
    }
 
    @AfterClass
-   public static void after() {
+   public static void after() throws IOException {
       Completable stop = map.client().stop();
       TestObserver<Void> observer = new TestObserver<>();
       stop.subscribe(observer);
       boolean terminated = observer.awaitTerminalEvent(5, SECONDS);
       if (!terminated)
          log.debugf("Unable to complete stopping client");
+
+      local.close();
    }
 
    @Test
