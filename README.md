@@ -7,8 +7,7 @@
 - [ ] Enable running suites from command line
 - [ ] Set up travis
 - [ ] Log complete messages after the async operation within lambda (avoid capturing external vars)
-- [ ] Test putAll, clear, getAll
-- [ ] RxMap.getAll
+- [ ] Test putAll and clear
 - [ ] RxMap.putAll
 - [ ] RxMap.replace
 - [x] RxMap.remove
@@ -17,3 +16,4 @@
 - [x] RxMap.put
 - [x] RxMap.get
 - [x] RxMap factory
+- [-] ~RxMap.getAll~ / No getAllAsync in Infinispan's AsyncCache, query more important
