@@ -1,3 +1,4 @@
+- [ ] Test: do not rely on predefined caches, create them on the fly
 - [ ] Deal with return of awaitTerminalEvent
 - [x] Each test should clear the cache when it finishes (symmetry) and wait for it
 - [x] Cache client in SingleNode test suite
@@ -7,7 +8,8 @@
 - [ ] Enable running suites from command line
 - [ ] Set up travis
 - [ ] Log complete messages after the async operation within lambda (avoid capturing external vars)
-- [ ] Test putAll and clear
+- [ ] Test: putAll and clear
+- [ ] RxClient.createMap
 - [ ] RxMap.putAll
 - [ ] RxMap.replace
 - [x] RxMap.remove
@@ -16,4 +18,4 @@
 - [x] RxMap.put
 - [x] RxMap.get
 - [x] RxMap factory
-- [-] ~RxMap.getAll~ / No getAllAsync in Infinispan's AsyncCache, query more important
+- [?] ~RxMap.getAll~ / No getAllAsync in Infinispan's AsyncCache, query more important

@@ -18,22 +18,24 @@ public final class Servers {
    }
 
    public static Closeable local() {
-      HotRodServer local = new HotRodServer();
-      local.start(
-         new HotRodServerConfigurationBuilder().build(),
+      // TODO There should be no need to fiddle with default cache: ISPN-8826
+      final DefaultCacheManager cacheManager = new DefaultCacheManager();
+      cacheManager.defineConfiguration("SHOULD_NOT_BE_NEEDED",
+         new ConfigurationBuilder().build());
 
-         // TODO Why is default getCache() called?
-         // org.infinispan.commons. CacheConfigurationException: ISPN000433: A default cache has been requested, but no cache has been set as default for this container
-         // new DefaultCacheManager()
-         new DefaultCacheManager(
-            new GlobalConfigurationBuilder().nonClusteredDefault().defaultCacheName("default").build(),
-            new ConfigurationBuilder().build())
+      final HotRodServerConfigurationBuilder serverCfg =
+         new HotRodServerConfigurationBuilder();
+      serverCfg.defaultCacheName("SHOULD_NOT_BE_NEEDED");
 
-         // TODO Fix WARN messages appearing in log as a result of code above
-      );
+      final HotRodServer server = new HotRodServer();
+      server.start(serverCfg.build(), cacheManager);
 
       isLocalRunning.set(true);
-      return local::stop;
+
+      return () -> {
+         server.stop();
+         cacheManager.close();
+      };
    }
 
    public static Closeable startIfNotRunning(Supplier<Closeable> server) {
