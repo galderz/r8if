@@ -1,22 +1,24 @@
+- [ ] Log complete messages after the async operation within lambda (avoid capturing external vars)
 - [ ] Test: buffered putAll calls
 - [ ] Test: do not rely on predefined caches, create them on the fly
-- [ ] Deal with return of awaitTerminalEvent
-- [x] Each test should clear the cache when it finishes (symmetry) and wait for it
-- [x] Cache client in SingleNode test suite
-- [ ] Create an API test where we show how to stop a cache and wait for it returning last operation result
-- [x] Verify calls are lazy and follow the sequence
-- [x] Allow individual tests to be run starting only server(s) needed for that test
-- [ ] Enable running suites from command line
-- [ ] Set up travis
-- [ ] Log complete messages after the async operation within lambda (avoid capturing external vars)
+- [ ] Test: Set up travis
+- [ ] Test: Deal with return of awaitTerminalEvent
 - [ ] Test: putAll and clear
-- [ ] RxClient.createMap
-- [ ] RxMap.putAll
-- [ ] RxMap.replace
-- [x] RxMap.remove
-- [x] RxMap.clear
-- [x] RxMap.putIfAbsent
-- [x] RxMap.put
-- [x] RxMap.get
-- [x] RxMap factory
-- [?] ~RxMap.getAll~ / No getAllAsync in Infinispan's AsyncCache, query more important
+- [ ] Test: Create an API test where we show how to stop a cache and wait for it returning last operation result
+- [ ] Test: Enable running suites from command line
+- [ ] API: RxClient.createMap
+- [ ] API: RxQuery.query
+- [ ] API: RxQuery.continuousQuery
+- [ ] API: RxMap.getAll (getAllAsync is currently in PR)
+- [ ] API: RxMap.replace
+- [x] API: RxMap.putAll
+- [x] API: RxMap.remove
+- [x] API: RxMap.clear
+- [x] API: RxMap.putIfAbsent
+- [x] API: RxMap.put
+- [x] API: RxMap.get
+- [x] API: RxMap factory
+- [x] Test: Allow individual tests to be run starting only server(s) needed for that test
+- [x] Test: Cache client in SingleNode test suite
+- [x] Test: Each test should clear the cache when it finishes (symmetry) and wait for it
+- [x] Verify calls are lazy and follow the sequence
