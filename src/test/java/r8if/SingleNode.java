@@ -1,6 +1,7 @@
 package r8if;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
@@ -14,6 +15,12 @@ import r8if.util.Servers;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static r8if.util.Tests.await;
@@ -159,6 +166,37 @@ public class SingleNode {
       Single<Boolean> removed = map.remove("48");
 
       await(false, removed);
+   }
+
+   @Test
+   public void testPutAll() {
+      // TODO Use real mon names
+      final String k1 = "1", k2 = "2", k3 = "3";
+      final String v1 = "1", v2 = "2", v3 = "3";
+      final List<String> vs = Arrays.asList(v1, v2, v3);
+
+      Flowable<Map.Entry<String, String>> mons = Flowable
+         .fromArray(
+            new AbstractMap.SimpleEntry<>(k1, v1)
+            , new AbstractMap.SimpleEntry<>(k2, v2)
+            , new AbstractMap.SimpleEntry<>(k3, v3)
+         );
+
+      final Maybe<List<String>> values = map
+         .putAll(mons)
+         .andThen(map.get(k1).map(v -> new ArrayList<>(Collections.singletonList(v))))
+         .flatMap(l -> map.get(k2).map(v -> append(v, l)))
+         .flatMap(l -> map.get(k3).map(v -> append(v, l)));
+
+      await(vs, values);
+      cleanup(k1, map);
+      cleanup(k2, map);
+      cleanup(k3, map);
+   }
+
+   private static <T> List<T> append(T t, List<T> l) {
+      l.add(t);
+      return l;
    }
 
 }

@@ -1,3 +1,4 @@
+- [ ] Test: buffered putAll calls
 - [ ] Test: do not rely on predefined caches, create them on the fly
 - [ ] Deal with return of awaitTerminalEvent
 - [x] Each test should clear the cache when it finishes (symmetry) and wait for it

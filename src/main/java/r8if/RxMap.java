@@ -1,6 +1,7 @@
 package r8if;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
@@ -12,6 +13,7 @@ import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.infinispan.commons.api.AsyncCache;
 
+import java.util.Map;
 import java.util.Objects;
 
 public final class RxMap<K, V> {
@@ -88,6 +90,18 @@ public final class RxMap<K, V> {
             AsyncCache::clearAsync
          )
          .observeOn(Schedulers.io());
+   }
+
+   public Completable putAll(Flowable<Map.Entry<K, V>> f) {
+      return f
+         .toMap(Map.Entry::getKey, Map.Entry::getValue)
+         .flatMapCompletable(map ->
+            Futures
+               .toCompletable(map, cache
+               , m -> String.format("putAll(%s)", m)
+               , (m, rc) -> rc.putAllAsync(m))
+         );
+
    }
 
    public RxClient client() {

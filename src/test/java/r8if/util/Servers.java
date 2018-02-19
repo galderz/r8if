@@ -20,12 +20,12 @@ public final class Servers {
    public static Closeable local() {
       // TODO There should be no need to fiddle with default cache: ISPN-8826
       final DefaultCacheManager cacheManager = new DefaultCacheManager();
-      cacheManager.defineConfiguration("SHOULD_NOT_BE_NEEDED",
+      cacheManager.defineConfiguration("default", // TODO SHOULD_NOT_BE_NEEDED
          new ConfigurationBuilder().build());
 
       final HotRodServerConfigurationBuilder serverCfg =
          new HotRodServerConfigurationBuilder();
-      serverCfg.defaultCacheName("SHOULD_NOT_BE_NEEDED");
+      serverCfg.defaultCacheName("default"); // TODO SHOULD_NOT_BE_NEEDED
 
       final HotRodServer server = new HotRodServer();
       server.start(serverCfg.build(), cacheManager);

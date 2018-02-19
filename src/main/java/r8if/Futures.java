@@ -48,6 +48,23 @@ final class Futures {
       });
    }
 
+   static <A, B, T> Completable toCompletable(A a, B b, Function<A, String> l, BiFunction<A, B, CompletionStage<T>> f) {
+      return Completable.create(source -> {
+         log.debugf(l.apply(a));
+         f.apply(a, b).whenComplete(
+            (v, t) -> {
+               if (t != null) {
+                  log.debugf(t, "%s failed", l.apply(a));
+                  source.onError(t);
+               } else {
+                  log.debugf("%s completed", l.apply(a));
+                  source.onComplete();
+               }
+            }
+         );
+      });
+   }
+
    static <A, B, T> Maybe<T> toMaybe(A a, B b, Function<A, String> l, BiFunction<A, B, CompletionStage<T>> f) {
       return Maybe.create(source -> {
          log.debugf(l.apply(a));
