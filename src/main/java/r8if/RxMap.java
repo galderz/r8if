@@ -12,6 +12,8 @@ import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.infinispan.commons.api.AsyncCache;
+import org.infinispan.commons.configuration.BasicConfiguration;
+import org.infinispan.commons.util.Either;
 
 import java.util.Map;
 import java.util.Objects;
@@ -106,12 +108,6 @@ public final class RxMap<K, V> {
 
    public RxClient client() {
       return client;
-   }
-
-   public static <K, V> Single<RxMap<K, V>> from(String cacheName, ConfigurationBuilder cfg) {
-      return RxClient
-         .from(cfg)
-         .flatMap(client -> client.rxMap(cacheName));
    }
 
    // getAll can be Flowable

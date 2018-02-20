@@ -5,7 +5,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
-import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.junit.AfterClass;
@@ -37,14 +36,22 @@ public class SingleNode {
    public static void before() {
       local = Servers.startIfNotRunning(Servers::local);
 
-      Single<RxMap<String, String>> value =
-         RxMap.from("default", new ConfigurationBuilder());
+      Single<RxMap<String, String>> value = RxClient
+         .from(RxConfigs.client())
+         .flatMap(c ->
+            // TODO Cache name should not be needed (ISPN-8851 or use workaround with StAx)
+            c.createRxMap("single-node"
+               , RxConfigs.map(() -> "<local-cache name=\"configuration\"/>"))
+         );
 
       TestObserver<RxMap<String, String>> observer = new TestObserver<>();
       value.subscribe(observer);
       boolean terminated = observer.awaitTerminalEvent(10, SECONDS);
       if (!terminated)
          throw new AssertionError("Unable to create RxMap instance");
+      observer.assertNoErrors();
+      observer.assertComplete();
+      observer.assertValueCount(1);
 
       map = observer.values().get(0);
    }

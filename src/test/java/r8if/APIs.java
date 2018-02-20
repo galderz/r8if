@@ -83,29 +83,29 @@ public class APIs {
       observer.assertValue("mudkip");
    }
 
-   /**
-    * Reactive remote put/get with create/destroy lifecycle and:
-    * - without caching variables
-    * - without deep nesting
-    * - map retrieved in a single step
-    */
-   @Test
-   public void testPutGetV4() {
-      Maybe<String> value = RxMap
-         .<String, String>from("default", new ConfigurationBuilder())
-         .flatMapMaybe(map ->
-            map.put("pokemon", "mudkip")
-               .andThen(map.get("pokemon"))
-               .doAfterTerminate(() -> map.client().stop())
-         );
-
-      TestObserver<String> observer = new TestObserver<>();
-      value.subscribe(observer);
-
-      observer.awaitTerminalEvent(5, SECONDS);
-      observer.assertNoErrors();
-      observer.assertComplete();
-      observer.assertValue("mudkip");
-   }
+//   /**
+//    * Reactive remote put/get with create/destroy lifecycle and:
+//    * - without caching variables
+//    * - without deep nesting
+//    * - map retrieved in a single step
+//    */
+//   @Test
+//   public void testPutGetV4() {
+//      Maybe<String> value = RxMap
+//         .<String, String>from("default", new ConfigurationBuilder())
+//         .flatMapMaybe(map ->
+//            map.put("pokemon", "mudkip")
+//               .andThen(map.get("pokemon"))
+//               .doAfterTerminate(() -> map.client().stop())
+//         );
+//
+//      TestObserver<String> observer = new TestObserver<>();
+//      value.subscribe(observer);
+//
+//      observer.awaitTerminalEvent(5, SECONDS);
+//      observer.assertNoErrors();
+//      observer.assertComplete();
+//      observer.assertValue("mudkip");
+//   }
 
 }

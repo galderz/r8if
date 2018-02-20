@@ -6,11 +6,13 @@
 - [ ] Test: putAll and clear
 - [ ] Test: Create an API test where we show how to stop a cache and wait for it returning last operation result
 - [ ] Test: Enable running suites from command line
-- [ ] API: RxClient.createMap
+- [ ] Test: Retrieving an non-existing map
+- [ ] Test API: 1 client, 2 maps
 - [ ] API: RxQuery.query
 - [ ] API: RxQuery.continuousQuery
 - [ ] API: RxMap.getAll (getAllAsync is currently in PR)
 - [ ] API: RxMap.replace
+- [x] API: RxClient.createRxMap
 - [x] API: RxMap.putAll
 - [x] API: RxMap.remove
 - [x] API: RxMap.clear
