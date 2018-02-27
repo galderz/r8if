@@ -177,9 +177,8 @@ public class SingleNode {
 
    @Test
    public void testPutAll() {
-      // TODO Use real mon names
-      final String k1 = "1", k2 = "2", k3 = "3";
-      final String v1 = "1", v2 = "2", v3 = "3";
+      final String k1 = "49", k2 = "123", k3 = "127";
+      final String v1 = "Venomoth", v2 = "Scyther", v3 = "Pinsir";
       final List<String> vs = Arrays.asList(v1, v2, v3);
 
       Flowable<Map.Entry<String, String>> mons = Flowable
