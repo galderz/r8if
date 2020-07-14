@@ -10,6 +10,7 @@ import org.infinispan.client.hotrod.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import r8if.model.Pokemon;
 import r8if.util.Servers;
 
 import java.io.Closeable;

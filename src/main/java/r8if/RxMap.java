@@ -8,12 +8,11 @@ import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.infinispan.client.hotrod.Flag;
 import org.infinispan.client.hotrod.RemoteCache;
-import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
+import org.infinispan.client.hotrod.Search;
 import org.infinispan.client.hotrod.logging.Log;
 import org.infinispan.client.hotrod.logging.LogFactory;
 import org.infinispan.commons.api.AsyncCache;
-import org.infinispan.commons.configuration.BasicConfiguration;
-import org.infinispan.commons.util.Either;
+import org.infinispan.query.dsl.Query;
 
 import java.util.Map;
 import java.util.Objects;
@@ -103,7 +102,15 @@ public final class RxMap<K, V> {
                , m -> String.format("putAll(%s)", m)
                , (m, rc) -> rc.putAllAsync(m))
          );
+   }
 
+   public Query query(String queryString) {
+      return Search.getQueryFactory(cache).create(queryString);
+   }
+
+   public <T> Flowable<T> execute(Query query) {
+      // TODO: Use Query PaginationContext to limit number of fetched results
+      return Flowable.fromIterable(query.list());
    }
 
    public RxClient client() {
