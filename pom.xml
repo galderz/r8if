@@ -12,7 +12,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <infinispan.version>9.2.0.CR2</infinispan.version>
-      <log4j.version>2.8.2</log4j.version>
+      <log4j.version>2.13.2</log4j.version>
    </properties>
 
    <dependencyManagement>
